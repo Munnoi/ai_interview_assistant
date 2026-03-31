@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Interview Feedback</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body class="center-page">
+    <main class="shell">
+      <div class="shell-grid">
+        <header class="shell-header">
+          <div class="eyebrow">Review your response</div>
+          <h1 class="page-title">Feedback from your latest answer.</h1>
+          <p class="body-copy">
+            Use this critique to tighten your next answer instead of treating it like a final verdict.
+          </p>
+        </header>
+
+        <section class="feedback-grid">
+          <div class="section-card">
+            <h2 class="section-title">Score</h2>
+            <p id="score" class="feedback-copy"></p>
+          </div>
+
+          <div class="section-card">
+            <h2 class="section-title">Feedback</h2>
+            <p id="feedback" class="feedback-copy"></p>
+          </div>
+
+          <div class="section-card">
+            <h2 class="section-title">Improvement</h2>
+            <p id="improvement" class="feedback-copy"></p>
+          </div>
+        </section>
+
+        <div class="feedback-actions">
+          <a class="button-link primary-btn" href="interview.html">Try Another Question</a>
+          <a class="button-link secondary-btn" href="index.html">Back to Home</a>
+        </div>
+      </div>
+    </main>
+
+    <script>
+      const data = JSON.parse(localStorage.getItem("feedback"));
+
+      if (!data) {
+        document.getElementById("feedback").innerText =
+          "No feedback found. Submit an answer first.";
+      } else {
+        document.getElementById("score").innerText = data.score
+          ? "Score: " + data.score
+          : "No score returned.";
+        document.getElementById("feedback").innerText =
+          data.feedback || "No feedback returned.";
+        document.getElementById("improvement").innerText =
+          data.improvement || "No separate improvement notes returned.";
+      }
+    </script>
+  </body>
+</html>

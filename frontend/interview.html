@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Interview Session</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body class="center-page">
+    <main class="shell">
+      <div class="shell-grid">
+        <header class="shell-header">
+          <div class="eyebrow">Live interview practice</div>
+          <h1 class="page-title">Answer the question as if you were in the actual round.</h1>
+          <p class="body-copy">
+            Focus on structure, tradeoffs, and clarity. Keep your answer deliberate rather than exhaustive.
+          </p>
+        </header>
+
+        <section class="question-card">
+          <p class="question-label">Current question</p>
+          <h2 id="question" class="question-text">Loading...</h2>
+        </section>
+
+        <section class="section-card">
+          <h2 class="section-title">Your answer</h2>
+          <textarea
+            id="answer"
+            class="answer-box"
+            placeholder="Type your answer here. Explain your reasoning, tradeoffs, and implementation details clearly."
+          ></textarea>
+          <div class="helper-row">
+            <span>Submit when your answer is complete. Feedback will open on the next page.</span>
+            <button class="primary-btn" onclick="submitAnswer()">Submit Answer</button>
+          </div>
+        </section>
+      </div>
+    </main>
+
+    <script>
+      let currentQuestion = "";
+
+      async function loadQuestion() {
+        const res = await fetch("http://127.0.0.1:8000/question");
+
+        const data = await res.json();
+        currentQuestion = data.question;
+
+        document.getElementById("question").innerText = currentQuestion;
+      }
+
+      async function saveFeedback(answer) {
+        const res = await fetch("http://127.0.0.1:8000/analyze", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            question: currentQuestion,
+            answer: answer,
+          }),
+        });
+
+        if (!res.ok) {
+          throw new Error("Failed to analyze answer");
+        }
+
+        const data = await res.json();
+
+        localStorage.setItem("feedback", JSON.stringify(data));
+        window.location.href = "feedback.html";
+      }
+
+      async function submitAnswer() {
+        const answer = document.getElementById("answer").value;
+
+        if (!answer.trim()) {
+          return;
+        }
+
+        const res = await fetch("http://127.0.0.1:8000/answer", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            answer,
+          }),
+        });
+
+        if (!res.ok) {
+          throw new Error("Failed to submit answer");
+        }
+
+        document.getElementById("answer").value = "";
+        await saveFeedback(answer);
+      }
+
+      loadQuestion();
+    </script>
+  </body>
+</html>
